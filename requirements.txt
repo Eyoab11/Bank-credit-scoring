@@ -1,5 +1,1 @@
-pandas
-scikit-learn
-matplotlib
-seaborn
-jupyter
+# Required Python packages

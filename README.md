@@ -1,4 +1,3 @@
-# Bati Bank Credit Scoring Project
+# Credit Risk Model
 
-## Project Summary
-...
+Project for credit risk scoring using ML.
