@@ -1,23 +1,24 @@
-name: CI/CD Pipeline              # The name of the workflow
+---
+name: CI/CD Pipeline  # GitHub Actions workflow name
 
 on:
-  push:                           # Trigger on push to main
+  push:
     branches: [main]
-  pull_request:                   # Trigger on PR to main
+  pull_request:
     branches: [main]
 
 jobs:
-  build:                          # One job: "build"
-    runs-on: ubuntu-latest        # Use Linux (not Windows)
+  build:
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3 # Pull your repo code
+        uses: actions/checkout@v3
 
       - name: Set up Python 3.13
         uses: actions/setup-python@v4
         with:
-          python-version: '3.13'  # Use Python 3.13
+          python-version: '3.13'  # Use latest Python 3.13 build
 
       - name: Install dependencies
         run: |
@@ -27,7 +28,7 @@ jobs:
       - name: Lint with flake8
         run: |
           pip install flake8
-          flake8 src/ tests/      # Lint source code and tests
+          flake8 src/ tests/
 
       - name: Run unit tests
         run: |
