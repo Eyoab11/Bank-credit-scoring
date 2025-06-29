@@ -1,3 +1,35 @@
+# 🏦 Alternative Data Credit Risk Model   
+
+## ✔️ Task 1: Data Collection & Understanding
+
+- Loaded dataset: `data.csv` from Xente's transaction platform  
+- Reference documentation: `Xente_Variable_Definitions.csv` for feature meanings  
+- Identified target variable:  
+  - `FraudResult` (1 = Fraud, 0 = Not Fraud)
+
+## ✔️ Task 2: Exploratory Data Analysis (EDA)
+
+### Data Distribution Analysis
+- Analyzed class balance: Fraud vs Non-Fraud cases
+- Examined transaction patterns:
+  - Timing by hour of day
+  - Amount distributions
+
+### Categorical Variable Investigation
+Visualized relationships between `FraudResult` and:
+- `ProductCategory` 
+- `ChannelId`
+- `PricingStrategy` 
+- `CountryCode`
+- `CurrencyCode`
+
+### Numerical Analysis
+- Generated correlation heatmap for numeric features
+
+### Outputs
+All plots saved to: `plots/task-2/`
+
+
 # Credit Scoring: Business Understanding
 
 This section outlines the business context for building a credit scoring model, focusing on:
