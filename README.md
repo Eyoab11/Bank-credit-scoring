@@ -1,5 +1,45 @@
 # 🏦 Alternative Data Credit Risk Model   
 
+### Folder structure
+```
+│ README.md
+│ requirements.txt
+│ Dockerfile
+│
+├───data
+│ ├───raw
+│ │ Xente_dataset.csv
+│ │ Xente_Variable_Definitions.csv
+│ │
+│ └───processed
+│ cleaned_data.csv
+│ features.csv
+│
+├───notebooks
+│ 1.0-eda.ipynb
+│
+├───plots
+│ └───task-2
+│ amount_dist.png
+│ fraud_by_hour.png
+│ category_fraud.png
+│ correlation_heatmap.png
+│
+├───src
+│ │ data_processing.py
+│ │ train.py
+│ │ predict.py
+│ │
+│ └───api
+│ main.py
+│ pydantic_models.py
+│
+└───tests
+test_data_processing.py
+test_models.py
+
+```
+
 ## ✔️ Task 1: Data Collection & Understanding
 
 - Loaded dataset: `data.csv` from Xente's transaction platform  
@@ -28,6 +68,9 @@ Visualized relationships between `FraudResult` and:
 
 ### Outputs
 All plots saved to: `plots/task-2/`
+
+### Directory
+EDA is done in `notebooks/1.0-eda.ipynb/`
 
 
 # Credit Scoring: Business Understanding
