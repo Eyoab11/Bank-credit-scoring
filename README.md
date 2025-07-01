@@ -73,6 +73,68 @@ All plots saved to: `plots/task-2/`
 EDA is done in `notebooks/1.0-eda.ipynb/`
 
 
+## ✔️ Task 3: Automated Feature Engineering
+
+This task focuses on transforming the raw, transaction-level data into a clean, aggregated, and model-ready dataset at the customer level. All logic is encapsulated in a reproducible script, a critical step in moving from exploration to a production-ready system.
+
+## 1. The Goal
+
+The primary objective is to create a feature set that describes each customer's historical behavior. Since credit risk is assessed at the customer level, not the transaction level, this aggregation is the most crucial transformation in the project. The final output is a single, clean CSV file located at `data/processed/processed_customer_data.csv`.
+
+## 2. The Implementation: `src/feature_engineering.py`
+
+I have built a robust data processing pipeline using scikit-learn. This approach ensures that every transformation is repeatable and can be easily integrated into a future model training workflow.
+
+The script performs two major operations:
+
+### A. Feature Aggregation (`AggregateFeatures` Transformer)
+
+A custom scikit-learn transformer was built to group the raw data by `CustomerId` and engineer a set of powerful behavioral features. The key features created are:
+
+- **Recency (R)**: Days since the customer's last transaction.
+- **Frequency (F)**: Total number of transactions made by the customer.
+- **Monetary (M)**: Total monetary value of all transactions for the customer.
+
+**Behavioral Metrics:**
+- `AvgTransactionValue`: The customer's average spending per transaction.
+- `StdTransactionValue`: The standard deviation of their transaction values, indicating spending consistency.
+- `NumUniqueProducts`: The variety of product categories the customer has purchased from.
+- `MostFrequentChannel`: The primary channel used by the customer.
+
+### B. Preprocessing Pipeline (`ColumnTransformer`)
+
+Once the data is aggregated to the customer level, a standard preprocessing pipeline is applied to prepare it for machine learning:
+
+- **Numerical Features**: All numerical columns (`Recency`, `Frequency`, etc.) are scaled using `StandardScaler`. This normalizes the features to have a mean of 0 and a standard deviation of 1, which is essential for many ML algorithms.
+- **Categorical Features**: The `MostFrequentChannel` column is converted into numerical format using `OneHotEncoder`. This creates new binary columns for each channel, allowing the model to interpret them correctly.
+
+The entire process is automated within the script, ensuring consistency every time it is run.
+
+## 3. How to Run the Script
+
+To regenerate the processed data from the raw dataset, ensure all dependencies are installed and run the script from the project's root directory.
+
+1. **Activate the virtual environment:**
+
+```bash
+   .\venv\Scripts\activate
+
+```
+
+2. **Install dependencies**
+
+```bash
+  pip install -r requirements.txt
+```
+3. **Execute the script from the project root**
+
+```bash
+python src/feature_engineering.py
+```
+
+Upon successful execution, the script will print the shape and a sample of the final processed DataFrame and save it to data/processed/processed_customer_data.csv.
+
+
 # Credit Scoring: Business Understanding
 
 This section outlines the business context for building a credit scoring model, focusing on:
