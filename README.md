@@ -134,6 +134,78 @@ python src/feature_engineering.py
 
 Upon successful execution, the script will print the shape and a sample of the final processed DataFrame and save it to data/processed/processed_customer_data.csv.
 
+## Task 4: Proxy Target Variable Engineering
+
+A critical challenge in this project is the absence of a direct "default" or "credit risk" label in the dataset. To train a supervised machine learning model, this task engineers a proxy target variable representing credit risk based on customer engagement patterns. The assumption is that the least engaged customers are the most likely to represent higher credit risk.
+
+## 1. The Goal
+
+The objective is to programmatically identify a segment of "high-risk" customers and create a binary target column named `is_high_risk`. This column serves as the ground truth for training predictive models. The final output is a complete training dataset located at `data/processed/final_training_data.csv`.
+
+## 2. The Implementation: `src/create_target_variable.py`
+
+The script uses RFM (Recency, Frequency, Monetary) analysis combined with K-Means clustering to segment customers. Here's the step-by-step process:
+
+### A. Calculate RFM Metrics
+For each unique `CustomerId`, the script calculates:
+- **Recency**: Days since the customer's last transaction
+- **Frequency**: Total number of transactions
+- **Monetary**: Total monetary value of all transactions
+
+### B. Scale Features for Clustering
+RFM features are scaled using `StandardScaler` to ensure equal weighting in the clustering algorithm (K-Means is distance-based).
+
+### C. K-Means Clustering
+Customers are segmented into 3 distinct clusters using `KMeans` (with `random_state=42` for reproducibility).
+
+Clusters are analyzed to identify the "high-risk" group based on:
+- Highest average Recency (least recent activity)
+- Lowest average Frequency (fewest transactions)
+- Lowest average Monetary value (lowest spend)
+
+### D. Visual Validation
+Boxplots are generated to confirm cluster characteristics:
+
+![RFM Cluster Boxplots](plots/task-4/rfm_cluster_boxplots.png)
+
+*Figure 4: RFM characteristics by cluster, showing the distinct profiles of the three customer segments.*
+
+### E. Create Target Variable
+A binary column `is_high_risk` is added:
+- `1` for customers in the high-risk cluster
+- `0` for all others
+
+This target variable is merged with the feature-engineered dataset from Task 3 (`processed_customer_data.csv`) to create the final training set.
+
+## 3. How to Run the Script
+
+**Prerequisite**: Ensure Task 3's output (`data/processed/processed_customer_data.csv`) exists.
+
+1. **Activate the virtual environment**:
+```bash
+   # Windows
+   .\venv\Scripts\activate
+```
+2. **Run the script from the project root:**
+```bash
+python src/create_target_variable.py
+```
+ 
+3. **Outputs**
+ - Final training dataset: data/processed/final_training_data.csv
+ - Diagnostic plots: plots/task-4/rfm_cluster_boxplots.png
+
+### File Structure
+
+project/
+├── src/
+│   ├── feature_engineering.py       # Task 3
+│   └── create_target_variable.py    # Task 4
+├── data/processed/
+│   ├── processed_customer_data.csv  # Input (Task 3)
+│   └── final_training_data.csv      # Output
+└── plots/task-4/
+    └── rfm_cluster_boxplots.png     # Visualization
 
 # Credit Scoring: Business Understanding
 
