@@ -322,7 +322,7 @@ This section outlines the business context for building a credit scoring model, 
 - Model selection trade-offs
 
 ---
-## 1. How does the Basel II Accord’s emphasis on risk measurement influence our need for an interpretable and well-documented model?
+## 1. How does the Basel II Accord's emphasis on risk measurement influence our need for an interpretable and well-documented model?
 
 ## Basel II Compliance and Model Interpretability Requirements
 
@@ -405,3 +405,48 @@ For **core risk models**, interpretability often outweighs marginal performance 
 - Compliance overhead  
 - Justification requirements  
 - Capital calculation scrutiny
+
+# Task 6: API Deployment, Docker, and CI/CD
+
+## Docker Containerization
+
+This project is fully containerized for easy deployment and reproducibility.
+
+- **Dockerfile**: Defines the environment for the FastAPI application. (You may need to complete the Dockerfile with the necessary instructions to run your API.)
+- **docker-compose.yml**: Orchestrates both the FastAPI API and an MLflow tracking server. This allows for local development and experiment tracking with a single command.
+
+### How to Build and Run Locally
+
+1. **Build the Docker image:**
+   ```bash
+   docker build -t credit-risk-api:latest .
+   ```
+2. **Run the API container:**
+   ```bash
+   docker run -d -p 8000:8000 credit-risk-api:latest
+   # The API will be available at http://localhost:8000
+   ```
+3. **Orchestrate with Docker Compose:**
+   ```bash
+   docker-compose up --build
+   # This will start both the API and the MLflow server
+   ```
+
+## CI/CD Pipeline (GitHub Actions)
+
+A robust CI/CD pipeline is set up using GitHub Actions:
+
+- **Triggers:** Runs on every push and pull request to `main` and any `task-*` branches.
+- **Steps:**
+  1. Checks out the code
+  2. Sets up Python and installs dependencies
+  3. Lints the codebase with flake8
+  4. Runs unit tests
+  5. Builds the Docker image
+  6. Runs a containerized smoke test to ensure the API starts and responds
+- **Location:** See `.github/workflows/ci.yml`
+- **Results:** CI status and logs are visible on the GitHub repository's Actions tab.
+
+This ensures that code changes are automatically tested, linted, and validated in a containerized environment before merging or deployment.
+
+---

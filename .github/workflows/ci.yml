@@ -3,9 +3,9 @@ name: CI/CD Pipeline  # GitHub Actions workflow name
 
 on:
   push:
-    branches: [main]
+    branches: [main, task-*]
   pull_request:
-    branches: [main]
+    branches: [main, task-*]
 
 jobs:
   build:
@@ -33,3 +33,16 @@ jobs:
       - name: Run unit tests
         run: |
           python -m unittest discover tests
+
+      - name: Build Docker image
+        run: |
+          docker build -t credit-risk-api:latest .
+
+      - name: Run API container (smoke test)
+        run: |
+          docker run -d --rm -p 8000:8000 --name test_api credit-risk-api:latest
+          # Wait for the API to start
+          sleep 10
+          # Check the API root endpoint (adjust if your FastAPI root is different)
+          curl --fail http://localhost:8000 || (docker logs test_api && exit 1)
+          docker stop test_api
