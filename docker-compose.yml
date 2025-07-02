@@ -1,1 +1,31 @@
-# Docker Compose for multi-container setup
+version: '3.8'
+
+services:
+  # The MLflow Tracking Server
+  mlflow:
+    image: python:3.11-slim
+    container_name: mlflow_server
+    command: >
+      sh -c "pip install mlflow boto3 &&
+             mlflow server --host 0.0.0.0 --port 5000 
+             --backend-store-uri /mlflow_data/backend 
+             --default-artifact-root /mlflow_data/artifacts"
+    ports:
+      - "5000:5000"
+    volumes:
+      # Mount local directories into the container for persistence
+      - ./mlflow_backend:/mlflow_data/backend
+      - ./mlflow_artifacts:/mlflow_data/artifacts
+
+  # Our FastAPI application
+  api:
+    build: .
+    container_name: credit_risk_api
+    depends_on:
+      - mlflow
+    ports:
+      - "8000:8000"
+    environment:
+      # This tells the mlflow client inside the API container where to find the server.
+      # 'mlflow' is the service name defined above.
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
