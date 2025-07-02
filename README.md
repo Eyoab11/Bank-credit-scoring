@@ -207,6 +207,113 @@ project/
 └── plots/task-4/
     └── rfm_cluster_boxplots.png     # Visualization
 
+
+# Task 5: Model Training, Tracking, and Testing
+
+With a clean, feature-rich dataset and a proxy target variable in place, this task focuses on training machine learning models to predict credit risk. The key objectives were to establish a robust training pipeline, use MLflow for experiment tracking and model management, and validate our feature engineering logic with unit tests.
+
+## 1. Implementation: Model Training (`src/train.py`)
+
+I developed a training script that orchestrates the entire modeling process.
+
+### A. The Process:
+
+**Load Data**: The script loads the final dataset created in Task 4 (`data/processed/final_training_data.csv`).
+
+**Data Splitting**: The data is split into a training set (80%) and a testing set (20%). Crucially, I used `stratify=y` to ensure that the proportion of high-risk vs. low-risk customers was identical in both sets, which is essential for imbalanced data.
+
+**Model Selection**: I trained two distinct models to compare a simple baseline against a more complex ensemble method:
+- **Logistic Regression**: A simple, interpretable model that serves as a strong baseline.
+- **Random Forest Classifier**: A powerful ensemble model capable of learning complex, non-linear patterns.
+
+For both models, `class_weight='balanced'` was used to counteract the imbalanced nature of our `is_high_risk` target variable.
+
+**Experiment Tracking with MLflow**: Each model training session was logged as a separate "run" under the "Bati Bank Credit Risk" experiment in MLflow. For each run, I logged:
+- **Parameters**: The type of model being trained.
+- **Metrics**: A comprehensive set of evaluation metrics (Accuracy, Precision, Recall, F1-Score, and ROC-AUC).
+- **Artifacts**: The trained scikit-learn model object itself.
+
+**Model Registration**: After all runs were complete, the script queried MLflow to find the run with the highest `roc_auc` score and automatically registered it as the "best" model in the MLflow Model Registry under the name `BatiBankCreditRiskModel`.
+
+### B. Results and Analysis:
+
+The script executed successfully, but the evaluation metrics revealed a critical insight about our data.
+
+```python
+- Training Logistic Regression -
+Evaluation Metrics:
+  accuracy: 1.0000, precision: 1.0000, recall: 1.0000, f1_score: 1.0000, roc_auc: 1.0000
+
+- Training Random Forest -
+Evaluation Metrics:
+  accuracy: 0.9987, precision: 0.0000, recall: 0.0000, f1_score: 0.0000, roc_auc: 1.0000
+```
+
+## Key Insight (Data Leakage)
+
+The perfect (or near-perfect) ROC-AUC scores are a classic symptom of **data leakage**. The features used to train the model (Recency, Frequency, Monetary) are the same features that were used to create the `is_high_risk` target variable via K-Means clustering. The model is not learning to predict risk in a general sense; it is simply learning to re-create the cluster boundaries.
+
+## Conclusion
+
+While this means the model's performance is artificially inflated, the pipeline itself is working correctly. For this project, I will proceed with the "best" registered model, acknowledging this limitation. In a real-world scenario, the next step would be to engineer features that are independent of those used for target creation.
+
+You can inspect all experiments and registered models by launching the MLflow UI from the project root:
+
+```bash
+mlflow ui
+```
+
+## 2. Implementation: Unit Testing (`tests/test_data_processing.py`)
+
+To ensure the reliability of our feature engineering logic, I implemented unit tests using pytest.
+
+### A. The Process
+
+#### Test Setup
+- Created a test fixture (`sample_raw_data`) that generates a small, predictable pandas DataFrame
+- The fixture mimics the structure of the raw transaction data
+
+#### Test Cases
+Implemented three specific tests for the `AggregateFeatures` transformer:
+
+1. **`test_aggregate_features_output_shape`**
+   - Verifies the transformer produces a DataFrame with:
+     - Correct number of rows (one per unique customer)
+     - Correct number of columns
+
+2. **`test_aggregate_features_recency_calculation`**
+   - Validates that the Recency calculation is mathematically correct
+
+3. **`test_aggregate_features_frequency_and_monetary`**
+   - Confirms proper calculation of:
+     - Frequency (count of transactions)
+     - Monetary (sum of value) aggregations
+
+### B. How to Run the Tests
+
+To execute the full test suite:
+
+1. First install the project in editable mode:
+```bash
+   pip install -e .
+```
+2. To run the test suite from the project's root directory:
+
+```bash
+pytest
+```
+
+The successful execution of these tests verifies that our core feature engineering logic is robust and functions as expected.
+
+
+Key improvements:
+1. Clear hierarchical structure with proper Markdown headers
+2. Consistent formatting for code/file references
+3. Better visual separation between sections
+4. Improved bullet point structure for test cases
+5. Properly formatted code blocks for commands
+6. More concise yet complete description of each component
+
 # Credit Scoring: Business Understanding
 
 This section outlines the business context for building a credit scoring model, focusing on:
