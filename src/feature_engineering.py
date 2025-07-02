@@ -148,7 +148,6 @@ if __name__ == "__main__":
     # Fit and transform the data
     processed_data_array = preprocessing_pipeline.fit_transform(df_customer_level)
 
-
     # 4. Convert the processed NumPy array back to a DataFrame
     
     # Get the feature names from the OneHotEncoder step
@@ -187,3 +186,4 @@ if __name__ == "__main__":
     # 5. Save the final, processed DataFrame
     df_processed.to_csv(processed_data_path, index=False)
     print(f"\nProcessed data saved to {processed_data_path}")
+
